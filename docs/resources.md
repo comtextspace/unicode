@@ -88,6 +88,7 @@ pip install PyICU regex
 npm install full-icu
 # Затем запускать: node --icu-data-dir=node_modules/full-icu script.js
 
-# Linux утилиты
-sudo apt install uniutils unicode
+# Linux утилиты (uniutils доступен только в Ubuntu/Debian, не в Parrot/Kali)
+sudo apt install uniutils   # если доступен
+sudo apt install unicode-data
 ```

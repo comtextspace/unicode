@@ -28,7 +28,8 @@ numbers  = ['file1', 'file10', 'file2', 'file20', 'file3']
 
 print("Русские слова:")
 print(f"  Naive:    {sorted(ru_words)}")
-print(f"  Expected: ['ежевика', 'ёж', 'Ёж', 'ель', 'Ель', 'елка', 'ещё']  (приблизительно)")
+print(f"  Naive sort uses Unicode code points: Ё(U+0401) < Е(U+0415) < е(U+0435) < ё(U+0451)")
+print(f"  Correct order (ICU ru_RU) — см. секцию 3 ниже")
 
 print("\nАнглийские слова:")
 print(f"  Naive:    {sorted(en_words)}")

@@ -4,7 +4,11 @@
 
 ### uniutils — пакет специализированных утилит
 
+!!! warning "Доступность"
+    Пакет `uniutils` есть в репозиториях Ubuntu/Debian, но отсутствует в Parrot OS, Kali и некоторых других дистрибутивах. Если `sudo apt install uniutils` выдаёт `Unable to locate package` — используйте Python-альтернативу ниже.
+
 ```bash
+# Ubuntu / Debian (если доступен)
 sudo apt install uniutils
 ```
 
@@ -16,10 +20,6 @@ echo "Привет" | uniname
 # 0       CYRILLIC CAPITAL LETTER PE  U+041F  D0 9F
 # 2       CYRILLIC SMALL LETTER R     U+0440  D1 80
 # ...
-
-# Конкретный символ
-echo "é" | uniname
-printf '\xc3\xa9' | uniname   # то же самое, hex-байты UTF-8
 ```
 
 **`unidesc`** — описание символов (категория, скрипт):
@@ -27,14 +27,6 @@ printf '\xc3\xa9' | uniname   # то же самое, hex-байты UTF-8
 ```bash
 echo "Hello Привет" | unidesc
 ```
-
-**`unihex`** — вывести строку как hex + Unicode:
-
-```bash
-echo "café" | unihex
-```
-
-**`unifuzz`** — генерация граничных Unicode-случаев для тестирования.
 
 ---
 
