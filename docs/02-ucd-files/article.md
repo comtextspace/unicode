@@ -54,6 +54,40 @@ wget https://unicode.org/Public/UCA/latest/allkeys.txt
 | 14 | Lowercase Mapping | `0061` | → 'a' |
 | 15 | Titlecase Mapping | (пусто) | Если = uppercase, пусто |
 
+### Разбор строки по шагам
+
+Возьмём реальный символ — `U+00E9`, é (LATIN SMALL LETTER E WITH ACUTE). Найдём его в `UnicodeData.txt`:
+
+```
+00E9;LATIN SMALL LETTER E WITH ACUTE;Ll;0;L;0065 0301;;;;N;;;00C9;;00C9
+```
+
+Разберём каждое непустое поле:
+
+| № | Значение | Что означает |
+|---|---|---|
+| 1 | `00E9` | Кодовая точка — U+00E9 |
+| 2 | `LATIN SMALL LETTER E WITH ACUTE` | Официальное имя |
+| 3 | `Ll` | General Category = Letter, Lowercase |
+| 4 | `0` | Combining Class = 0 (базовый символ, не combining mark) |
+| 5 | `L` | Bidi Class = Left-to-Right |
+| 6 | `0065 0301` | **Каноническая декомпозиция**: é = `e` (U+0065) + ◌́  (U+0301, combining acute accent). Нет тега — значит каноническая, не совместимая |
+| 10 | `N` | Не зеркалится в RTL-тексте |
+| 13 | `00C9` | Simple Uppercase Mapping → U+00C9 = É |
+| 14 | (пусто) | Lowercase mapping пуст — символ уже строчной |
+| 15 | `00C9` | Simple Titlecase Mapping = то же, что Uppercase |
+
+Поля 7–9 (числовые значения) пусты — символ не является цифрой. Поля 11–12 устарели.
+
+**Перекрёстные ссылки с другими файлами UCD** для того же символа U+00E9:
+
+- `DerivedCoreProperties.txt` — здесь U+00E9 входит в свойство `Alphabetic` (потому что категория `Ll`), `Lowercase`, `ID_Start`, `ID_Continue`
+- `PropList.txt` — нет особых свойств (не `White_Space`, не `Dash` и т.д.)
+- `SpecialCasing.txt` — не упоминается (для é нет особых правил смены регистра)
+- `CaseFolding.txt`: `00E9; C; 00E9;` — совпадает сам с собой (уже строчной)
+
+**Итог:** один символ U+00E9 описан в нескольких файлах UCD. `UnicodeData.txt` даёт базовые свойства, остальные файлы дополняют картину.
+
 ### Диапазоны
 
 Некоторые блоки (CJK, суррогаты) записаны как диапазон — первая и последняя строки с именами `<CJK Ideograph, First>` и `<CJK Ideograph, Last>`:

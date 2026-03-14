@@ -44,6 +44,8 @@
 
 | Ресурс | URL |
 |---|---|
+| Guide to the Unicode Standard (Jukka Korpela) — путеводитель по структуре стандарта: главы, аннексы, UCD, как найти всю информацию о конкретном символе | [jkorpela.fi/unicode/guide.html](https://jkorpela.fi/unicode/guide.html) |
+| A tutorial on character code issues (Jukka Korpela) — глубокий разбор понятий character/glyph/encoding, ASCII, ISO 8859, Unicode, совместимость | [jkorpela.fi/chars.html](https://jkorpela.fi/chars.html) |
 | История UTF-8 — рассказ Роба Пайка о том, как Кен Томпсон придумал UTF-8 за один вечер на салфетке в ресторане | [doc.cat-v.org/bell_labs/utf-8_history](http://doc.cat-v.org/bell_labs/utf-8_history) |
 | Pragmatic Unicode (PyCon 2012, Ned Batchelder) — 5 законов Unicode и 3 практических правила: Unicode Sandwich, знай что у тебя за строка, тестируй | [nedbatchelder.com/text/unipain](http://nedbatchelder.com/text/unipain) |
 | Unicode Text Segmentation (UAX#29) — алгоритм разбиения на графемные кластеры | https://unicode.org/reports/tr29/ |
