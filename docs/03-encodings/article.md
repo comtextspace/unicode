@@ -81,6 +81,7 @@ low  = 0xDC00 + (0xF30D & 0x3FF) = 0xDC00 + 0x30D = 0xDF0D
 ### BOM (Byte Order Mark)
 
 UTF-16 существует в двух вариантах: `UTF-16-LE` (little-endian) и `UTF-16-BE`. BOM — U+FEFF в начале файла — сигнализирует о порядке байт:
+
 - `FF FE` — little-endian
 - `FE FF` — big-endian
 
