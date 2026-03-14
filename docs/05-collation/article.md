@@ -122,6 +122,79 @@ ICU позволяет кастомизировать правила через 
 
 ---
 
+## 3.5. Как сортировать правильно: примеры кода
+
+### Python — PyICU
+
+```python
+import icu
+
+# Сортировка с учётом локали
+collator = icu.Collator.createInstance(icu.Locale('ru_RU'))
+words = ['ёж', 'Ель', 'елка', 'Ёж', 'еж']
+result = sorted(words, key=collator.getSortKey)
+print(result)
+# ['Ель', 'Ёж', 'елка', 'ёж', 'еж']  — ё рядом с е, регистр игнорируется
+
+# Уровни сравнения (strength)
+collator.setStrength(icu.Collator.PRIMARY)   # только базовые буквы
+collator.setStrength(icu.Collator.SECONDARY) # + диакритика
+collator.setStrength(icu.Collator.TERTIARY)  # + регистр (по умолчанию)
+
+# Сравнение двух строк напрямую
+result = collator.compare('ё', 'е')
+# -1 (меньше), 0 (равно), 1 (больше)
+
+# Немецкий phonebook (ü → ue)
+de_phone = icu.Collator.createInstance(icu.Locale('de@collation=phonebook'))
+sorted(['Müller', 'Mueller', 'Meier'], key=de_phone.getSortKey)
+# ['Meier', 'Mueller', 'Müller']  — Müller = Mueller в phonebook
+```
+
+### JavaScript — Intl.Collator
+
+```javascript
+// Базовая сортировка с учётом русского языка
+const collator = new Intl.Collator('ru');
+['ёж', 'Ель', 'елка', 'Ёж'].sort(collator.compare);
+// ['Ель', 'Ёж', 'елка', 'ёж']
+
+// Параметры чувствительности:
+// 'base'    — только базовые буквы (a = á = A)
+// 'accent'  — + диакритика (a ≠ á, a = A)
+// 'case'    — + регистр (a ≠ A, a = á)
+// 'variant' — всё различается (по умолчанию)
+const caseInsensitive = new Intl.Collator('ru', { sensitivity: 'base' });
+caseInsensitive.compare('Ёж', 'ёж')  // 0 — равны
+
+// Числа внутри строк (natural sort)
+const natural = new Intl.Collator('ru', { numeric: true });
+['file10', 'file2', 'file1'].sort(natural.compare);
+// ['file1', 'file2', 'file10']  — правильно!
+
+// Получить sort key (для кэширования при больших объёмах)
+const keys = ['ёж', 'Ель'].map(w => ({
+    word: w,
+    key: collator.resolvedOptions()  // ключи через ICU внутри движка
+}));
+```
+
+### Встроенный `sorted` vs PyICU
+
+```python
+# Стандартный Python — неправильно для русского
+sorted(['ёж', 'Ель', 'елка'])
+# ['Ель', 'елка', 'ёж']  — ё в конце из-за кодовой точки U+0451
+
+# PyICU — правильно
+import icu
+col = icu.Collator.createInstance(icu.Locale('ru_RU'))
+sorted(['ёж', 'Ель', 'елка'], key=col.getSortKey)
+# ['Ель', 'елка', 'ёж']  — ё рядом с е
+```
+
+---
+
 ## 4. ICU — International Components for Unicode
 
 **ICU** (https://icu.unicode.org/) — стандартная реализация UCA и CLDR. Написана на C++ (icu4c) и Java (icu4j). Используется в:

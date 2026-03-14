@@ -146,11 +146,62 @@ git status  # нарушения нормализации в именах фай
 ```
 
 ### Unicode spoofing (атаки через похожие символы)
+
+NFKC не защищает от атак, где используются **визуально похожие символы из разных скриптов**:
+
+```python
+real  = "admin"   # все Latin
+fake  = "аdmin"   # первая 'а' — Cyrillic U+0430, остальные Latin
+
+real == fake       # False
+# NFKC не помогает — оба символа уже в "простой" форме, просто разные скрипты
+
+import unicodedata
+unicodedata.normalize('NFKC', fake) == real  # False — разные символы
 ```
-аdmin  ≠  admin   # первая 'а' — кириллическая U+0430!
-NFKC не поможет — это разные скрипты.
-Для этого нужна Confusables таблица (UTS#39).
+
+Для таких случаев в Unicode существует отдельный стандарт **UTS #39 — Unicode Security Mechanisms** и файл [`confusables.txt`](https://unicode.org/Public/security/latest/confusables.txt), который перечисляет все пары «confusable»-символов:
+
 ```
+# confusables.txt (фрагмент):
+0430 ;  0061 ;  MA  # а (CYRILLIC SMALL LETTER A) → a (LATIN SMALL LETTER A)
+0435 ;  0065 ;  MA  # е (CYRILLIC SMALL LETTER IE) → e (LATIN SMALL LETTER E)
+043E ;  006F ;  MA  # о (CYRILLIC SMALL LETTER O) → o (LATIN SMALL LETTER O)
+```
+
+**Практика: обнаружение смешанных скриптов**
+
+Надёжная проверка — убедиться, что строка использует только один скрипт:
+
+```python
+import unicodedata
+
+def scripts_in_string(s: str) -> set[str]:
+    """Возвращает множество скриптов в строке (исключая Common и Inherited)."""
+    scripts = set()
+    for ch in s:
+        # unicodedata не даёт Script напрямую, используем имя символа
+        name = unicodedata.name(ch, '')
+        if 'CYRILLIC' in name:
+            scripts.add('Cyrillic')
+        elif 'LATIN' in name:
+            scripts.add('Latin')
+        # и т.д.
+    return scripts
+
+# Лучше — через модуль regex (поддерживает \p{Script=...}):
+import regex
+def is_mixed_script(s: str) -> bool:
+    cyrillic = bool(regex.search(r'\p{Script=Cyrillic}', s))
+    latin    = bool(regex.search(r'\p{Script=Latin}', s))
+    return cyrillic and latin
+
+print(is_mixed_script("аdmin"))  # True — подозрительно!
+print(is_mixed_script("admin"))  # False
+print(is_mixed_script("привет")) # False
+```
+
+Ссылки: [UTS #39](https://unicode.org/reports/tr39/) · [`confusables.txt`](https://unicode.org/Public/security/latest/confusables.txt)
 
 ### Python идентификаторы
 Python 3 нормализует идентификаторы через NFKC:
